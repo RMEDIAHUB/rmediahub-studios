@@ -2,7 +2,7 @@
  * RMEDIAHUB Studios for Lampa
  * Independent Russian-language catalogue plugin.
  *
- * Version: 1.0.0
+ * Version: 1.1.0
  * License: MIT
  *
  * The plugin does not provide video streams. It only opens TMDB catalogue
@@ -15,7 +15,7 @@
     window.rmediahub_studios_ready = true;
 
     var PLUGIN = 'rmediahub_studios';
-    var VERSION = '1.0.0';
+    var VERSION = '1.1.0';
 
     var ICONS = {
         netflix: brandIcon('N', '#e50914'),
@@ -64,87 +64,83 @@
     var SERVICES = [
         {
             id: 'netflix', title: 'Netflix', icon: ICONS.netflix, categories: [
-                providerMovie('Популярные фильмы', 8),
-                providerTv('Популярные сериалы', 8),
-                providerMovie('Новые фильмы', 8, 'primary_release_date.gte={year}-01-01'),
-                providerTv('Новые сериалы', 8, 'first_air_date.gte={year}-01-01'),
-                providerMovie('Боевики и блокбастеры', 8, 'with_genres=28'),
-                providerTv('Фантастика и фэнтези', 8, 'with_genres=10765'),
-                providerTv('Криминальные сериалы', 8, 'with_genres=80'),
-                providerTv('Корейские сериалы', 8, 'with_original_language=ko'),
-                providerTv('Аниме', 8, 'with_genres=16&with_original_language=ja'),
-                providerMovie('Документальные фильмы', 8, 'with_genres=99')
+                providerMovie('Новые фильмы', 8, 'primary_release_date.lte={date}&sort_by=primary_release_date.desc&vote_count.gte=5'),
+                tv('Новые сериалы', 'with_networks=213&first_air_date.lte={date}&sort_by=first_air_date.desc&vote_count.gte=5'),
+                tv('В тренде на Netflix', 'with_networks=213&sort_by=popularity.desc'),
+                movie('Боевики и блокбастеры', 'with_companies=213&with_genres=28|12&sort_by=popularity.desc'),
+                tv('Фантастические миры', 'with_networks=213&with_genres=10765&sort_by=vote_average.desc&vote_count.gte=100'),
+                tv('Криминальные сериалы', 'with_networks=213&with_genres=80&sort_by=popularity.desc'),
+                tv('Корейские сериалы', 'with_networks=213&with_original_language=ko&sort_by=popularity.desc'),
+                tv('Аниме', 'with_networks=213&with_genres=16&sort_by=popularity.desc'),
+                movie('Документальные фильмы', 'with_companies=213&with_genres=99&sort_by=release_date.desc'),
+                movie('Выбор критиков', 'with_companies=213&vote_average.gte=7.5&vote_count.gte=300&sort_by=vote_average.desc')
             ]
         },
         {
             id: 'apple', title: 'Apple TV+', icon: ICONS.apple, categories: [
-                providerMovie('Фильмы Apple TV+', 350),
-                providerTv('Сериалы Apple TV+', 350),
-                providerMovie('Новые фильмы', 350, 'primary_release_date.gte={year}-01-01'),
-                providerTv('Новые сериалы', 350, 'first_air_date.gte={year}-01-01'),
-                providerTv('Фантастика', 350, 'with_genres=10765'),
-                providerTv('Драмы', 350, 'with_genres=18'),
-                providerTv('Комедии', 350, 'with_genres=35'),
-                providerMovie('Триллеры', 350, 'with_genres=53')
+                providerMovie('Новые фильмы', 350, 'primary_release_date.lte={date}&sort_by=primary_release_date.desc&vote_count.gte=5'),
+                providerTv('Новые сериалы', 350, 'first_air_date.lte={date}&sort_by=first_air_date.desc&vote_count.gte=5'),
+                providerTv('Хиты Apple TV+', 350, 'sort_by=popularity.desc'),
+                providerMovie('Apple Original Films', 350, 'sort_by=release_date.desc&vote_count.gte=10'),
+                providerTv('Фантастика', 350, 'with_genres=10765&sort_by=vote_average.desc&vote_count.gte=100'),
+                providerTv('Комедии и хорошее настроение', 350, 'with_genres=35&sort_by=popularity.desc'),
+                providerTv('Триллеры и детективы', 350, 'with_genres=9648|80&sort_by=popularity.desc')
             ]
         },
         {
             id: 'max', title: 'HBO / Max', icon: ICONS.max, categories: [
-                providerMovie('Популярные фильмы', 1899),
-                providerTv('Популярные сериалы', 1899),
-                tv('Лучшие сериалы HBO', 'with_networks=49&sort_by=vote_count.desc'),
-                providerTv('Новые сериалы', 1899, 'first_air_date.gte={year}-01-01'),
-                providerTv('Драмы', 1899, 'with_genres=18'),
-                providerTv('Криминал', 1899, 'with_genres=80'),
-                providerTv('Фэнтези и фантастика', 1899, 'with_genres=10765'),
-                providerMovie('DC и супергерои', 1899, 'with_genres=28&with_keywords=9715')
+                movie('Новые фильмы WB/HBO', 'with_companies=174|49&primary_release_date.lte={date}&sort_by=primary_release_date.desc&vote_count.gte=10'),
+                tv('Новые сериалы HBO/Max', 'with_networks=49|3186&first_air_date.lte={date}&sort_by=first_air_date.desc&vote_count.gte=5'),
+                tv('Главные хиты HBO', 'with_networks=49&sort_by=popularity.desc'),
+                tv('Оригиналы Max', 'with_networks=3186&sort_by=popularity.desc'),
+                movie('Блокбастеры Warner Bros.', 'with_companies=174&sort_by=revenue.desc&vote_count.gte=1000'),
+                tv('Золотая коллекция HBO', 'with_networks=49&vote_average.gte=8&vote_count.gte=500&sort_by=vote_average.desc'),
+                tv('Фэнтези и фантастика', 'with_networks=49|3186&with_genres=10765&sort_by=popularity.desc'),
+                tv('Премиальные драмы', 'with_networks=49&with_genres=18&sort_by=popularity.desc'),
+                movie('Вселенная DC', 'with_companies=174&with_keywords=9715&sort_by=release_date.desc')
             ]
         },
         {
             id: 'prime', title: 'Prime Video', icon: ICONS.prime, categories: [
-                providerMovie('Популярные фильмы', 9),
-                providerTv('Популярные сериалы', 9),
-                providerMovie('Новые фильмы', 9, 'primary_release_date.gte={year}-01-01'),
-                providerTv('Новые сериалы', 9, 'first_air_date.gte={year}-01-01'),
-                providerMovie('Боевики', 9, 'with_genres=28'),
-                providerTv('Фантастика и фэнтези', 9, 'with_genres=10765'),
-                providerTv('Комедии', 9, 'with_genres=35'),
-                providerMovie('Лучшее по оценкам', 9, 'sort_by=vote_average.desc&vote_count.gte=500')
+                tv('В тренде на Prime Video', 'with_networks=1024&sort_by=popularity.desc'),
+                providerMovie('Новые фильмы', 119, 'primary_release_date.lte={date}&sort_by=primary_release_date.desc&vote_count.gte=5'),
+                tv('Новые сериалы', 'with_networks=1024&first_air_date.lte={date}&sort_by=first_air_date.desc&vote_count.gte=5'),
+                tv('Боевики и антигерои', 'with_networks=1024&with_genres=10759&sort_by=popularity.desc'),
+                movie('Блокбастеры Amazon и MGM', 'with_companies=1024|21&sort_by=revenue.desc'),
+                tv('Фантастика и фэнтези', 'with_networks=1024&with_genres=10765&sort_by=popularity.desc'),
+                tv('Комедии', 'with_networks=1024&with_genres=35&sort_by=vote_average.desc'),
+                tv('Самый высокий рейтинг', 'with_networks=1024&vote_average.gte=8&vote_count.gte=300&sort_by=vote_average.desc')
             ]
         },
         {
             id: 'disney', title: 'Disney+', icon: ICONS.disney, categories: [
-                providerMovie('Популярные фильмы', 337),
-                providerTv('Популярные сериалы', 337),
-                providerMovie('Новые фильмы', 337, 'primary_release_date.gte={year}-01-01'),
-                movie('Marvel', 'with_companies=420&sort_by=popularity.desc'),
-                tv('Сериалы Marvel', 'with_companies=420&sort_by=popularity.desc'),
-                movie('Звёздные войны', 'with_companies=1&with_keywords=11195&sort_by=popularity.desc'),
+                providerMovie('Новые фильмы Disney+', 337, 'primary_release_date.lte={date}&sort_by=primary_release_date.desc&vote_count.gte=5'),
+                providerTv('Новые сериалы Disney+', 337, 'first_air_date.lte={date}&sort_by=first_air_date.desc&vote_count.gte=5'),
+                movie('Киновселенная Marvel', 'with_companies=420&sort_by=release_date.desc&vote_count.gte=200'),
+                tv('Сериалы Marvel', 'with_companies=420&with_networks=2739&sort_by=first_air_date.desc'),
+                movie('Звёздные войны', 'with_companies=1&sort_by=release_date.asc'),
                 movie('Pixar', 'with_companies=3&sort_by=popularity.desc'),
-                providerMovie('Мультфильмы Disney', 337, 'with_genres=16'),
-                providerTv('Для всей семьи', 337, 'with_genres=10751')
+                movie('Классика Disney', 'with_companies=6125&sort_by=popularity.desc'),
+                tv('Хиты FX', 'with_networks=88&sort_by=popularity.desc'),
+                tv('Симпсоны и анимация FOX', 'with_networks=19&with_genres=16&sort_by=popularity.desc')
             ]
         },
         {
             id: 'hulu', title: 'Hulu', icon: ICONS.hulu, categories: [
-                providerMovie('Популярные фильмы', 15),
-                providerTv('Популярные сериалы', 15),
-                providerTv('Новые сериалы', 15, 'first_air_date.gte={year}-01-01'),
-                providerTv('Драмы', 15, 'with_genres=18'),
-                providerTv('Комедии', 15, 'with_genres=35'),
-                providerTv('Триллеры и криминал', 15, 'with_genres=80'),
-                providerTv('Анимация для взрослых', 15, 'with_genres=16')
+                tv('Оригиналы Hulu: в тренде', 'with_networks=453&sort_by=popularity.desc'),
+                tv('Драмы и триллеры', 'with_networks=453&with_genres=18|9648&sort_by=vote_average.desc'),
+                tv('Комедии', 'with_networks=453&with_genres=35&sort_by=popularity.desc'),
+                tv('Анимация для взрослых', 'with_networks=453&with_genres=16&sort_by=popularity.desc'),
+                tv('Мини-сериалы', 'with_networks=453&with_keywords=158718&sort_by=first_air_date.desc')
             ]
         },
         {
             id: 'paramount', title: 'Paramount+', icon: ICONS.paramount, categories: [
-                providerMovie('Популярные фильмы', 531),
-                providerTv('Популярные сериалы', 531),
-                providerTv('Новые сериалы', 531, 'first_air_date.gte={year}-01-01'),
-                movie('Фильмы Paramount', 'with_companies=4&sort_by=popularity.desc'),
-                tv('Вселенная Yellowstone', 'with_keywords=241229&sort_by=popularity.desc'),
-                tv('Звёздный путь', 'with_keywords=1377&sort_by=popularity.desc'),
-                providerTv('Детям и семье', 531, 'with_genres=10762')
+                movie('Блокбастеры Paramount', 'with_companies=4&sort_by=revenue.desc'),
+                tv('Оригиналы Paramount+', 'with_networks=4330&sort_by=popularity.desc'),
+                tv('Вселенная Yellowstone', 'with_networks=318|4330&with_genres=37|18&sort_by=popularity.desc'),
+                tv('Звёздный путь', 'with_networks=4330&with_keywords=159223&sort_by=first_air_date.desc'),
+                tv('Nickelodeon: детям', 'with_networks=13&sort_by=popularity.desc')
             ]
         },
         {
@@ -184,36 +180,146 @@
         return Lampa.Storage.get(settingName(service.id), true) !== false;
     }
 
-    function preparePath(path) {
-        return path
-            .replace(/\{region\}/g, encodeURIComponent(getRegion()))
-            .replace(/\{year\}/g, String(new Date().getFullYear()));
+    function today() {
+        var date = new Date();
+        return date.getFullYear() + '-' +
+            ('0' + (date.getMonth() + 1)).slice(-2) + '-' +
+            ('0' + date.getDate()).slice(-2);
     }
 
-    function openCategory(service, category) {
-        Lampa.Controller.toggle('content');
-        Lampa.Activity.push({
-            url: preparePath(category.path),
-            title: service.title + ' — ' + category.title,
-            component: 'category_full',
-            source: 'tmdb',
-            card_type: true,
-            page: 1
+    function prepareValue(value) {
+        return String(value)
+            .replace(/\{region\}/g, getRegion())
+            .replace(/\{year\}/g, String(new Date().getFullYear()))
+            .replace(/\{date\}/g, today());
+    }
+
+    function parseCategory(category) {
+        var parts = category.path.split('?');
+        var params = {};
+
+        if (parts[1]) {
+            parts[1].split('&').forEach(function (pair) {
+                var separator = pair.indexOf('=');
+                var key = separator >= 0 ? pair.slice(0, separator) : pair;
+                var value = separator >= 0 ? pair.slice(separator + 1) : '';
+                if (key) params[decodeURIComponent(key)] = decodeURIComponent(value);
+            });
+        }
+
+        return { url: parts[0], params: params };
+    }
+
+    function tmdbUrl(category, page) {
+        var parsed = parseCategory(category);
+        var query = [
+            'api_key=' + encodeURIComponent(Lampa.TMDB.key()),
+            'language=' + encodeURIComponent(Lampa.Storage.get('language', 'ru')),
+            'page=' + encodeURIComponent(page || 1)
+        ];
+
+        Object.keys(parsed.params).forEach(function (key) {
+            query.push(encodeURIComponent(key) + '=' + encodeURIComponent(prepareValue(parsed.params[key])));
         });
+
+        return Lampa.TMDB.api(parsed.url + '?' + query.join('&'));
+    }
+
+    function serviceById(id) {
+        for (var i = 0; i < SERVICES.length; i++) {
+            if (SERVICES[i].id === id) return SERVICES[i];
+        }
+    }
+
+    /** Landing page with several horizontal catalogue rows. */
+    function StudiosMain(object) {
+        var component = new Lampa.InteractionMain(object);
+        var service = serviceById(object.service_id);
+
+        component.create = function () {
+            var self = this;
+            var categories = service ? service.categories : [];
+            var network = new Lampa.Reguest();
+            var status = new Lampa.Status(categories.length);
+
+            this.activity.loader(true);
+
+            status.onComplite = function () {
+                var rows = [];
+
+                Object.keys(status.data).sort(function (a, b) {
+                    return Number(a) - Number(b);
+                }).forEach(function (key) {
+                    var response = status.data[key];
+                    var category = categories[Number(key)];
+
+                    if (!response || !response.results || !response.results.length) return;
+
+                    Lampa.Utils.extendItemsParams(response.results, {
+                        style: { name: 'wide' }
+                    });
+
+                    rows.push({
+                        title: category.title,
+                        results: response.results,
+                        category_path: category.path
+                    });
+                });
+
+                self.activity.loader(false);
+                if (rows.length) self.build(rows);
+                else self.empty();
+            };
+
+            categories.forEach(function (category, index) {
+                network.silent(tmdbUrl(category, 1), function (response) {
+                    status.append(String(index), response);
+                }, function () {
+                    status.error();
+                });
+            });
+
+            return this.render();
+        };
+
+        component.onMore = function (row) {
+            Lampa.Activity.push({
+                title: service.title + ' — ' + row.title,
+                component: 'rmediahub_studios_view',
+                category_path: row.category_path,
+                page: 1
+            });
+        };
+
+        return component;
+    }
+
+    /** Full paginated catalogue opened by the "More" button. */
+    function StudiosView(object) {
+        var component = new Lampa.InteractionCategory(object);
+        var network = new Lampa.Reguest();
+        var category = { path: object.category_path };
+
+        component.create = function () {
+            var self = this;
+            network.silent(tmdbUrl(category, 1), function (response) {
+                self.build(response);
+            }, this.empty.bind(this));
+        };
+
+        component.nextPageReuest = function (pageObject, resolve, reject) {
+            network.silent(tmdbUrl(category, pageObject.page), resolve, reject);
+        };
+
+        return component;
     }
 
     function openService(service) {
-        Lampa.Select.show({
-            title: service.title + ' — подборки',
-            items: service.categories.map(function (category) {
-                return { title: category.title, category: category };
-            }),
-            onSelect: function (item) {
-                openCategory(service, item.category);
-            },
-            onBack: function () {
-                Lampa.Controller.toggle('menu');
-            }
+        Lampa.Activity.push({
+            title: service.title,
+            component: 'rmediahub_studios_main',
+            service_id: service.id,
+            page: 1
         });
     }
 
@@ -316,6 +422,19 @@
             description: 'Русские подборки стримингов в боковом меню',
             component: PLUGIN
         };
+
+        Lampa.Component.add('rmediahub_studios_main', StudiosMain);
+        Lampa.Component.add('rmediahub_studios_view', StudiosView);
+
+        if (!$('#rmediahub-studios-css').length) {
+            $('body').append(
+                '<style id="rmediahub-studios-css">' +
+                '.rmediahub_studios_main .card--wide{width:18.3em!important}' +
+                '.rmediahub_studios_view .card--wide{width:18.3em!important}' +
+                '.rmediahub_studios_view .category-full{padding-top:1em}' +
+                '</style>'
+            );
+        }
 
         addSettings();
         refreshMenu();
