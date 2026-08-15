@@ -2,7 +2,7 @@
  * MEDIA Parser for Lampa
  * RMEDIAHUB parser health check, automatic selection and hot switcher.
  *
- * Version: 1.0.0
+ * Version: 1.1.0
  * License: MIT
  */
 (function () {
@@ -11,21 +11,25 @@
     if (window.rmediahub_parser_ready) return;
     window.rmediahub_parser_ready = true;
 
-    var VERSION = '1.0.0';
+    var VERSION = '1.1.0';
     var PREFIX = 'rmediahub_parser_';
     var KEY_LIST = PREFIX + 'list';
     var KEY_ACTIVE = PREFIX + 'active';
     var KEY_AUTO = PREFIX + 'auto';
     var KEY_BACKUP = PREFIX + 'backup';
+    var KEY_CATALOG_VERSION = PREFIX + 'catalog_version';
+    var CATALOG_VERSION = 2;
     var CHECK_TTL = 2 * 60 * 1000;
     var CHECK_TIMEOUT = 12000;
     var PERIODIC_CHECK = 10 * 60 * 1000;
 
     var DEFAULT_PARSERS = [
         { id: 'maxvol', name: 'jr.maxvol.pro', url: 'https://jr.maxvol.pro', key: '' },
+        { id: 'jacred_su', name: 'JacRed.su', url: 'https://jacred.su', key: '' },
         { id: 'jacred_ru', name: 'jac-red.ru', url: 'https://jac-red.ru', key: '' },
+        { id: 'jacred', name: 'Jac.red', url: 'https://jac.red', key: '' },
         { id: 'lampa_app', name: 'Lampa.app', url: 'https://lampa.app', key: '' },
-        { id: 'jacred', name: 'Jac.red', url: 'https://jac.red', key: '' }
+        { id: 'bylampa_http', name: 'ByLampa HTTP', url: 'http://87.120.84.218:9117', key: '333' }
     ];
 
     var state = {
@@ -91,6 +95,31 @@
 
     function saveParsers(list) {
         Lampa.Storage.set(KEY_LIST, JSON.stringify(list));
+    }
+
+    function migrateCatalog() {
+        var storedVersion = parseInt(storageGet(KEY_CATALOG_VERSION, 0), 10) || 0;
+        var raw = storageGet(KEY_LIST, '');
+        var list = raw ? getParsers() : [];
+        var changed = false;
+
+        if (storedVersion >= CATALOG_VERSION && list.length) return;
+
+        DEFAULT_PARSERS.forEach(function (candidate) {
+            var candidateHost = hostFromUrl(candidate.url);
+            var exists = list.some(function (parser) {
+                return parser.id === candidate.id ||
+                    (hostFromUrl(parser.url) === candidateHost && String(parser.key || '') === String(candidate.key || ''));
+            });
+
+            if (!exists) {
+                list.push(JSON.parse(JSON.stringify(candidate)));
+                changed = true;
+            }
+        });
+
+        if (changed || !raw) saveParsers(list);
+        Lampa.Storage.set(KEY_CATALOG_VERSION, CATALOG_VERSION);
     }
 
     function parserById(id) {
@@ -402,6 +431,7 @@
                     addCustomParser(enabled);
                 } else if (item.action === 'reset') {
                     saveParsers(cloneDefaults());
+                    Lampa.Storage.set(KEY_CATALOG_VERSION, CATALOG_VERSION);
                     Lampa.Storage.set(KEY_ACTIVE, DEFAULT_PARSERS[0].id);
                     state.checkedAt = 0;
                     state.results = {};
@@ -534,7 +564,7 @@
     }
 
     function init() {
-        if (!Lampa.Storage.get(KEY_LIST, '')) saveParsers(cloneDefaults());
+        migrateCatalog();
         if (typeof Lampa.Storage.get(KEY_AUTO) === 'undefined') Lampa.Storage.set(KEY_AUTO, true);
         if (typeof Lampa.Storage.get(KEY_BACKUP) === 'undefined') Lampa.Storage.set(KEY_BACKUP, true);
 
